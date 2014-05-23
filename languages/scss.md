@@ -6,8 +6,8 @@
 - 見た目を反映したものやそれが何を表しているかではなく、目的や役割を反映した名前を付ける。
 - 短くしすぎて意味がわからなくなるようなのは NG。
 
-
-### ID
+ID
+--
 
 - すべて小文字で、単語はアンダースコア `_` でつなげる (スネークケース)。
 
@@ -15,12 +15,40 @@
 #global_header
 ```
 
-### class
+
+class
+-----
 
 - すべて小文字で、単語はダッシュ `-` でつなげる。
 
 ```scss
 .menu-item
+```
+
+
+mixin / function
+----------------
+
+- すべて小文字で、単語はダッシュ `-` でつなげる。
+
+```scss
+@mixin some-mixin($arg) {
+  // ...
+}
+
+@function some-func($arg) {
+  // ...
+}
+```
+
+
+variables
+---------
+
+- すべて小文字で、単語はダッシュ `-` でつなげる。
+
+```scss
+$some-var: 1;
 ```
 
 
@@ -80,6 +108,7 @@ header {
   // ...
 }
 
+// NG
 .foo{
   // ...
 }
@@ -96,6 +125,17 @@ header {
 
 // NG
 .foo, .bar {
+  // ...
+}
+```
+
+- `+, >, ~` の前後には、スペースを入れる。
+
+```scss
+.one + .other {
+  // ...
+}
+.parent > .child {
   // ...
 }
 ```
@@ -196,6 +236,13 @@ body {
 ```
 
 
+引用符
+------
+
+- ダブルクオーテーション `"` を使用する。
+
+
+
 
 スタイルルール
 ==============
@@ -247,10 +294,12 @@ padding-left: 0;
 ----
 
 - 値が「0」なら単位を省略する。
+- 単位が秒 `s` である場合は、例外とする。
 
 ```scss
 margin: 0;
 padding: 0;
+@include transition(color 0s 3s ease-in-out);
 ```
 
 
@@ -270,37 +319,51 @@ url の引用符
 - `url()` での指定においては引用符を省略すること。
 
 ```scss
-@import url(/path/to/file);
+background: url(/path/to/file);
 ```
 
 
 カラーコード
 ------------
 
-- カラーコードは全て小文字の16進数で表記する。
+- カラーコードは全て小文字の hex コードで表記する。
 - 可能な場合は、3文字のショートコードで書く。
 - 色名は使用しない。
-
+- rgba を使う場合、色の引数には、hex コードを使う。
 
 ```scss
 // OK
 color: #fff;
 color: #c00;
 color: #efefef;
+color: rgba(#000, .5);
 
 // NG
 color: white;
 color: #cc0000;
 color: #EFEFEF;
+color: rgba(0, 0, 0, .5);
 ```
 
 
-プロパティの記述順序
+リスト、関数呼び出し
 --------------------
+
+- コンマ `,` の後にスペースを入れる。
+
+```scss
+@include some-mixin(10px, 20px);
+$sizes: 10px, 20px;
+```
+
+
+ルールブロック内の記述順序
+--------------------------
+
+### プロパティ
 
 - アルファベットの順に記述する。
 - ベンダープレフィックスは無視する。
-- ベンダープレフィックスの順序は以下のようにする。
 
 ```scss
 border: 1px solid;
@@ -308,6 +371,8 @@ border: 1px solid;
 color: black;
 text-align: center;
 ```
+
+- ベンダープレフィックスの順序は以下のようにする。
 
 ```scss
 -webkit-border-radius: 4px; // WebKit
@@ -317,5 +382,121 @@ text-align: center;
 border-radius: 4px;         // No prefix
 ```
 
+### extend
+
+- `@extend()` は、プロパティのブロックの最初にまとめる。
+- 他のプロパティとの間には、空行をあける。
+
+```scss
+.foo {
+  @extend %bar;
+
+  color: #fff;
+}
+```
+
+
+### include
+
+- 順番は mixin の内容によるため、指定はない。
+- 他のプロパティとの間には、空行をあける**必要はない**。
+
+```scss
+.foo {
+  color: #fff;
+  @include box-shadow(0 0 1px #000);
+}
+```
+
+- 引数が2つ以上の場合は、named argument を使用する。
+- 1行が長くなる場合は、改行する。
+
+```scss
+// OK
+@include some-mixin(
+  $size: 10px,
+  $base-color: #fff,
+  $hover-color: #fff
+);
+
+// NG
+@include some-mixin(10px, #fff, #fff);
+```
+
+
+### & (親参照)
+
+- セレクタが & ではじまるブロックは、原則プロパティの後、他のルールブロックの前に書く。
+
+```scss
+.foo {
+  color: #fff;
+
+  &.alt {
+    // ...
+  }
+
+  & + .foo {
+    // ...
+  }
+
+  .bar {
+    // ...
+  }
+
+  .baz {
+    // ...
+  }
+}
+```
+
+
+制御構文
+--------
+
+### @if, @elseif @else
+
+```scss
+// OK
+@if $var1 == foo {
+  // ...
+} @elseif $var2 == bar {
+  // ...
+} @else {
+  // ...
+}
+
+// NG
+@if $var1 == foo {
+  // ...
+}
+@else {
+  // ...
+}
+```
+
+### @each
+
+```scss
+@each $color in $colors {
+  // ...
+}
+```
+
+### @for
+
+```scss
+@for $n from 1 through 10 {
+  // ...
+}
+```
+
+### @while
+
+```scss
+@while $var < 10 {
+  // ...
+}
+```
 
 
