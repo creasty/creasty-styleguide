@@ -8,7 +8,7 @@ Creasty Style Guide
 - [Markdown](languages/markdown.md)
 - [HAML](languages/haml.md)
 - [SCSS](languages/scss.md)
-- CoffeeScript
+- [CoffeeScript](languages/coffeescript.md)
 - Ruby
 - Objective-C
 
